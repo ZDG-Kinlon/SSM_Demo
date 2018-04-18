@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dao.ArticleMapper">
+    <insert id="add">
+        insert into article (authorId, articleTitle, lookCount, giveGood, articleContent)
+        values (#{authorid}, #{articleTitle}, 0, 0, #{articleContent})
+    </insert>
+
+    <update id="set">
+        update article
+        set authorid = #{authorid}, articleTitle = #{ articleTitle}, articleContent = #{articleContent}
+        where articleId = #{articleId}
+    </update>
+
+    <delete id="del">
+        delete from article
+        where articleId = #{articleId}
+    </delete>
+
+    <select id="get" resultType="Article">
+        select
+            articleId,
+            authorId,
+            articleTitle,
+            lookCount,
+            giveGood,
+            articleContent
+        from article
+        where articleId = #{articleId}
+        order by articleId desc
+    </select>
+
+    <select id="gets" resultType="Article">
+        select
+            articleId,
+            authorId,
+            articleTitle,
+            lookCount,
+            giveGood,
+            articleContent
+        from article
+        order by articleId desc
+    </select>
+
+    <select id="getsByAuthorId" resultType="Article">
+        select
+            articleId,
+            authorId,
+            articleTitle,
+            lookCount,
+            giveGood,
+            articleContent
+        from article
+        where authorId = #{authorId}
+        order by articleId desc
+    </select>
+
+    <update id="plusLookCount">
+        update article
+        set lookCount = lookCount + 1
+        where articleId = #{articleId}
+    </update>
+
+    <update id="plusgiveGood">
+        update article
+        set giveGood = giveGood + 1
+        where articleId = #{articleId}
+    </update>
+</mapper>

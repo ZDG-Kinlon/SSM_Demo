@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--配置文件-->
+    <context:property-placeholder location="classpath:dbconfig.properties"/>
+    <!--连接池-->
+    <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource"
+          p:driverClass="${jdbc.driver}"
+          p:jdbcUrl="${jdbc.url}"
+          p:user="${jdbc.user}"
+          p:password="${jdbc.password}"/>
+
+    <!--扫描的注解-->
+    <context:component-scan base-package="cn.controller">
+        <!--除了控制器的所有注解-->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--扫描所有的Service对象到容器中进行注册-->
+    <context:component-scan base-package="cn.service"/>
+
+    <!--MyBatis整合-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory"
+          p:dataSource-ref="dataSource"
+          p:configLocation="classpath:mybatis-config.xml"
+          p:mapperLocations="classpath:mapper/*.xml"/>
+
+    <!--扫描器，将接口的mapper对象加入到ioc容器-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:basePackage="cn.dao"/>
+
+    <!--事物管理器-->
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager"
+          p:dataSource-ref="dataSource"/>
+
+    <!--事物控制-->
+    <aop:config>
+        <!--切入点表达式-->
+        <aop:pointcut id="txPoint" expression="execution(* cn.service.impl..*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint"/>
+    </aop:config>
+
+    <!--事物增强-->
+    <tx:advice id="txAdvice">
+        <tx:attributes>
+            <!--所有方法全是事物-->
+            <tx:method name="*"/>
+            <!--只读事物-->
+            <tx:method name="get*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+</beans>

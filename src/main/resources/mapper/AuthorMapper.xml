@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dao.AuthorMapper">
+    <insert id="add">
+        insert into author (authorName, authorNickName, authorAge)
+        values (#{name}, #{nikeName}, #{age})
+    </insert>
+
+    <delete id="del">
+        delete from author
+        where authorId = #{authorId}
+    </delete>
+
+    <update id="set">
+        update author
+        set authorName = #{name}, authorNickName = #{nikeName}, authorAge = #{age}
+        where authorId = #{id}
+    </update>
+
+    <select id="get" resultType="Author">
+        select
+            authorId,
+            authorName,
+            authorNickName,
+            authorAge
+        from author
+        where authorId = #{authorId}
+        order by authorId desc
+    </select>
+
+    <select id="gets" resultType="Author">
+        select
+            authorId,
+            authorName,
+            authorNickName,
+            authorAge
+        from author
+        order by authorId desc
+    </select>
+</mapper>

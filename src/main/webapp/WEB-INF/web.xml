@@ -1,0 +1,98 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+    <!--spring-->
+    <listener>
+        <!--启动Web容器时，自动装配Spring applicationContext.xml的配置信息，整个加载配置过程由ContextLoader来完成-->
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <context-param>
+        <!--指定配置文件的位置-->
+        <param-name>contextConfigLocation</param-name>
+        <!--可以使用逗号和星号载入多个配置文件-->
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>springmvc</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!--容器启动时自动初始化该Servlet-->
+        <load-on-startup>1</load-on-startup>
+        <init-param>
+            <!--初始化时调用的配置文件-->
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/springmvc-config.xml</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <!--拦截的请求-->
+        <servlet-name>springmvc</servlet-name>
+        <!--支持Restful请求需要修改为/，后缀请求需要在Controller中添加后缀-->
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <!--字符集过滤器-->
+    <filter>
+        <filter-name>encoding</filter-name>
+        <!--将所有请求的字符集转换为指定的类型，解决乱码-->
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>utf-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceRequestEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceResponseEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encoding</filter-name>
+        <!--过滤请求的链接规则-->
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--RESTful的URI规范-->
+    <!--
+    在Restful之前的操作：
+    http://127.0.0.1/user/save POST 新增用户
+    http://127.0.0.1/user/delete GET/POST 删除用户信息
+    http://127.0.0.1/user/update POST 修改用户信息
+    http://127.0.0.1/user/query/1 GET  根据用户id查询用户数据
+
+    RESTful用法：
+    http://127.0.0.1/user  POST 新增用户
+    http://127.0.0.1/user/1  DELETE 删除用户信息
+    http://127.0.0.1/user/1  PUT 修改用户信息
+    http://127.0.0.1/user/1 GET  根据用户id查询用户数据
+    -->
+    <filter>
+        <filter-name>rest</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>rest</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>restPUT</filter-name>
+        <!--解决PUT请求，将数据包装为Map-->
+        <filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>restPUT</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--初始页-->
+    <!---->
+    <!--<welcome-file-list>-->
+        <!--<welcome-file>index.jsp</welcome-file>-->
+    <!--</welcome-file-list>-->
+    <!---->
+</web-app>
